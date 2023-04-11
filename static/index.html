@@ -241,7 +241,6 @@ function calculateCompatibility() {
     let totalCompatibility = question1Compatibility + question2Compatibility + question3Compatibility + question4Compatibility + question5Compatibility;
     let weightedCompatibility = totalCompatibility / MAX_SCORE * 100;
 
-
     totalCompatibility *= 100 / MAX_SCORE;
     totalCompatibility = Math.round(totalCompatibility);
     console.log("tc="+ totalCompatibility);
