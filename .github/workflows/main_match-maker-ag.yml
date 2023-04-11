@@ -1,277 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Matchmaker</title>
-    <style>
-        body {
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            color: #444;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            box-shadow: 0px 0px 5px #999;
-            border-radius: 5px;
-            padding: 30px;
-            max-width: 600px;
-            width: 100%;
-            margin: 0 20px;
-            box-sizing: border-box;
-        }
-        h1 {
-            font-size: 36px;
-            margin-top: 0;
-            text-align: center;
-        }
-        form {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        label {
-            font-size: 18px;
-            margin-bottom: 10px;
-            display: block;
-        }
-        select {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-            width: 100%;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            border-radius: 5px;
-            border: none;
-            background-color: #3498db;
-            color: #fff;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        p {
-            font-size: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .remark {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 0;
-            color: #f44336;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-<!-- 
-    Author:  Anas Abughali
-    Project: MatchmakerWeb
-    
--->
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
 
-<body style="background-color: #F5F5F5; font-family: Arial, sans-serif;">
-    <header style="text-align: center; background-color: #2E4053; color: white; padding: 20px;">
-      <h1 style="font-size: 3rem; margin: 0;">Matchmaker</h1>
-    </header>
-    <main style="max-width: 800px; margin: auto; padding: 20px;">
-      <section>
-        <h2 style="font-size: 2rem;">❤️❤️MATCHMAKER❤️❤️</h2>
-        <p style="font-size: 1.2rem;">
-          Read each question carefully and select the option that best matches your answer. Once you've answered all five questions, click the "Calculate Compatibility" button below. Our algorithm will compare your answers to the ideal responses and generate a compatibility score.
-        </p>
-      </section>
-    </main>
-    </body>
+name: Build and deploy Node.js app to Azure Web App - match-maker-ag
 
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-    <label>I enjoy spending time outdoors.</label><br />
-    <select id="q1">
-        <option value="">Select an option</option>
-        <option value="5">Strongly Agree</option>
-        <option value="4">Agree</option>
-        <option value="3">Neither agree nor disagree</option>
-        <option value="2">Disagree</option>
-        <option value="1">Strongly Disagree</option>
-    </select>
-    <br /><br />
+jobs:
+  build:
+    runs-on: windows-latest
 
-    <label>I am a night owl.</label><br />
-    <select id="q2">
-        <option value="">Select an option</option>
-        <option value="5">Strongly Agree</option>
-        <option value="4">Agree</option>
-        <option value="3">Neither agree nor disagree</option>
-        <option value="2">Disagree</option>
-        <option value="1">Strongly Disagree</option>
-    </select>
-    <br /><br />
+    steps:
+      - uses: actions/checkout@v2
 
-    <label> I am passionate about travel.</label><br />
-    <select id="q3">
-        <option value="">Select an option</option>
-        <option value="5">Strongly Agree</option>
-        <option value="4">Agree</option>
-        <option value="3">Neither agree nor disagree</option>
-        <option value="2">Disagree</option>
-        <option value="1">Strongly Disagree</option>
-    </select>
-    <br /><br />
+      - name: Set up Node.js version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
 
-    <label>I am a creative person.</label><br />
-    <select id="q4">
-        <option value="">Select an option</option>
-        <option value="5">Strongly Agree</option>
-        <option value="4">Agree</option>
-        <option value="3">Neither agree nor disagree</option>
-        <option value="2">Disagree</option>
-        <option value="1">Strongly Disagree</option>
-    </select>
-    <br /><br />
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
+      
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: node-app
+          path: .
 
-    <label>I value honesty and integrity.</label><br />
-    <select id="q5">
-        <option value="">Select an option</option>
-        <option value="5">Strongly Agree</option>
-        <option value="4">Agree</option>
-        <option value="3">Neither agree nor disagree</option>
-        <option value="2">Disagree</option>
-        <option value="1">Strongly Disagree</option>
-    </select>
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: node-app
 
-    <br /><br /><br />
-    <p id="compatibility"></p>
-    <p id="compatibility-range"></p>
-    <p id="remark"></p>
-    <button onclick="calculateCompatibility()">Calculate Compatibility</button>
-
-<script>
-console.log("Starting Matchmaker...");
-
-function calculateCompatibility() {
-    console.log("calculateCompatibility()");
-
-
-
-    const DESIRED_RESPONSE = [
-        5, /* strongly agree */
-        2, /* disagree */
-        4, /* agree */
-        4, /* agree */
-        5, /* strongly agree */
-    ]
-
-    const MAX_SCORE = 25;
-
-    const QUESTION_WEIGHTS = [2, 1, 2, 3, 1];
-
-    const COMPATIBILITY_RANGES = [
-    { min: 80, max: 100, message: "❤️❤️You are a perfect match! Congratulations!❤️❤️", remark: "Congratulations!" },
-    { min: 60, max: 80, message: "👍👍You are compatible. You two seem like a good fit!👍👍", remark: "You two seem like a good fit!" },
-    { min: 40, max: 60, message: "🤷🤷You have some differences, but it could work. You might want to discuss your differences and find some common ground🤷🤷", remark: "You might want to discuss your differences and find some common ground." },
-    { min: 20, max: 40, message: "😔😔You are not very compatible.You might want to think carefully before pursuing a relationship😔😔", remark: "You might want to think carefully before pursuing a relationship." },
-    { min: 0, max: 20, message: "👺👺You are not compatible at all.It doesn't seem like you two would work well together👺👺", remark: "It doesn't seem like you two would work well together." },
-    ];
-
-
-    let question1Response = document.getElementById("q1").selectedOptions[0].value;
-    let question2Response = document.getElementById("q2").selectedOptions[0].value;
-    let question3Response = document.getElementById("q3").selectedOptions[0].value;
-    let question4Response = document.getElementById("q4").selectedOptions[0].value;
-    let question5Response = document.getElementById("q5").selectedOptions[0].value;
-
-    if (question1Response === "" || question2Response === "" || question3Response === "" || question4Response === "" || question5Response === "") {
-        alert("Please answer all questions.");
-        return;
-    }
-
-
-    console.log("Question 1 Answers:")
-    console.log(document.getElementById("q1").selectedOptions[0].text);
-    console.log(document.getElementById("q1").selectedOptions[0].value);
-    console.log(question1Response);
-
-    console.log("Question 2 Answers:");
-    console.log(document.getElementById("q2").selectedOptions[0].text);
-    console.log(document.getElementById("q2").selectedOptions[0].value);
-    console.log(question2Response);
-
-    console.log("Question 3 Answers:");
-    console.log(document.getElementById("q3").selectedOptions[0].text);
-    console.log(document.getElementById("q3").selectedOptions[0].value);
-    console.log(question3Response);
-
-    console.log("Question 4 Answers:");
-    console.log(document.getElementById("q4").selectedOptions[0].text);
-    console.log(document.getElementById("q4").selectedOptions[0].value);
-    console.log(question4Response);
-
-    console.log("Question 5 Answers:");
-    console.log(document.getElementById("q5").selectedOptions[0].text);
-    console.log(document.getElementById("q5").selectedOptions[0].value);
-    console.log(question5Response);
-
-    let question1Compatibility = 5 - Math.abs(question1Response - DESIRED_RESPONSE[0]);
-    let question2Compatibility = 5 - Math.abs(question2Response - DESIRED_RESPONSE[1]);
-    let question3Compatibility = 5 - Math.abs(question3Response - DESIRED_RESPONSE[2]);
-    let question4Compatibility = 5 - Math.abs(question4Response - DESIRED_RESPONSE[3]);
-    let question5Compatibility = 5 - Math.abs(question5Response - DESIRED_RESPONSE[4]);
-
-
-    console.log("c1="+question1Compatibility);
-    console.log("c2="+question2Compatibility);
-    console.log("c3="+question3Compatibility);
-    console.log("c4="+question4Compatibility);
-    console.log("c5="+question5Compatibility);
-
-    let totalCompatibility = question1Compatibility + question2Compatibility + question3Compatibility + question4Compatibility + question5Compatibility;
-    let weightedCompatibility = totalCompatibility / MAX_SCORE * 100;
-
-
-    totalCompatibility *= 100 / MAX_SCORE;
-    totalCompatibility = Math.round(totalCompatibility);
-    console.log("tc="+ totalCompatibility);
-    console.log("weightedCompatibility=" + weightedCompatibility);
-let compatibilityRange = "";
-for (let i = 0; i < COMPATIBILITY_RANGES.length; i++) {
-    if (weightedCompatibility >= COMPATIBILITY_RANGES[i].min && 
-        (!COMPATIBILITY_RANGES[i].max || weightedCompatibility < COMPATIBILITY_RANGES[i].max)) {
-        compatibilityRange = COMPATIBILITY_RANGES[i].message;
-        break;
-    }
-}
-console.log(compatibilityRange);
-
-
-    document.getElementById("compatibility").innerHTML = "Your compatibility is " + totalCompatibility.toFixed(0) + "%";
-
-    document.getElementById("compatibility-range").innerHTML = compatibilityRange;
-    document.getElementById("weighted-compatibility").innerHTML = "Your weighted compatibility score is: " + weightedCompatibility.toFixed(2) + "%";
-}
-
-
-// Validate user input and display error message
-function validate(value) {
-if (value === "") {
-return "Please select an option.";
-}
-
-}
-
-</script>
-</body>
-</html>
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp
+        with:
+          app-name: 'match-maker-ag'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA5B7DDA3D0F402AB69C8AA4FE7BA7C9 }}
+          package: .
